@@ -1,5 +1,6 @@
 package com.example.gymapp.ui.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,11 +13,19 @@ fun StartScreen(navController: NavController) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Colossus") }) }
     ) { padding ->
-        Button(
-            onClick = { navController.navigate("settings") },
-            modifier = Modifier.padding(padding)
-        ) {
-            Text("Przejdź do Ustawień")
+        Column {
+            Button(
+                onClick = { navController.navigate("settings") },
+                modifier = Modifier.padding(padding)
+            ) {
+                Text("Przejdź do Ustawień")
+            }
+            Button(
+                onClick = { navController.navigate("routines") },
+                modifier = Modifier.padding(padding)
+            ) {
+                Text("Przejdź do Rutyn")
+            }
         }
     }
 }
