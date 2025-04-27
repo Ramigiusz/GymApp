@@ -1,9 +1,15 @@
 // ui/screens/SettingsScreen.kt
 package com.example.gymapp.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -26,7 +32,28 @@ fun SettingsScreen(navController: NavController) {
         },
         bottomBar = {
             BottomAppBar {
-                Text("Bottom Bar", modifier = Modifier.padding(16.dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    BottomNavItem(
+                        icon = Icons.Default.List,
+                        label = "Rutyny",
+                        onClick = { navController.navigate("routines") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Default.Home,
+                        label = "Ustawienia",
+                        onClick = { navController.navigate("start") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Default.Settings,
+                        label = "Ustawienia",
+                        onClick = { navController.navigate("settings") }
+                    )
+                }
             }
         }
     ) { paddingValues ->

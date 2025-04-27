@@ -3,6 +3,7 @@ package com.example.gymapp.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -48,6 +49,11 @@ fun StartScreen(navController: NavController) {
                         onClick = { navController.navigate("routines") }
                     )
                     BottomNavItem(
+                        icon = Icons.Default.Home,
+                        label = "Ustawienia",
+                        onClick = { navController.navigate("start") }
+                    )
+                    BottomNavItem(
                         icon = Icons.Default.Settings,
                         label = "Ustawienia",
                         onClick = { navController.navigate("settings") }
@@ -79,7 +85,7 @@ fun StartScreen(navController: NavController) {
             RoutineCard(
                 name = "Push Day",
                 onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ }
+                onEdit = { /* TODO: Edit routine */ },
             )
             Spacer(modifier = Modifier.height(8.dp))
             RoutineCard(

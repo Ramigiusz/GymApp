@@ -27,13 +27,28 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun addRoutine() {
+    fun addRoutine(name: String) {
         viewModelScope.launch {
-            if (newRoutineName.isNotBlank()) {
-                routineDao.insertRoutine(Routine(name = newRoutineName))
+            val routine = Routine(name = name)
+            routineDao.insertRoutine(routine)
+            loadRoutines()
+        }
+    }
+
+    fun updateRoutine(id: Int, name: String) {
+        viewModelScope.launch {
+            val routine = routines.find { it.id == id }
+            if (routine != null) {
+                val updatedRoutine = routine.copy(name = name)
+                routineDao.updateRoutine(updatedRoutine)
                 loadRoutines()
-                newRoutineName = ""
             }
+        }
+    }
+    fun deleteRoutine(routine: Routine) {
+        viewModelScope.launch {
+            routineDao.deleteRoutine(routine)
+            loadRoutines()
         }
     }
 }

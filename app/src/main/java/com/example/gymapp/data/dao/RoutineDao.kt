@@ -11,4 +11,10 @@ interface RoutineDao {
 
     @Insert
     suspend fun insertRoutine(routine: Routine)
+
+    @Delete
+    suspend fun deleteRoutine(routine: Routine)
+
+    @Update
+    suspend fun updateRoutine(routine: Routine)
 }
