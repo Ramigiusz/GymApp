@@ -45,7 +45,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                     BottomNavItem(
                         icon = Icons.Default.Home,
-                        label = "Ustawienia",
+                        label = "Start",
                         onClick = { navController.navigate("start") }
                     )
                     BottomNavItem(
