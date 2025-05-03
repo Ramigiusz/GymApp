@@ -1,5 +1,8 @@
 package com.example.gymapp.ui.screens
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymapp.viewmodel.RoutineViewModel
+import com.example.gymapp.data.model.Routine
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -50,7 +53,7 @@ fun StartScreen(navController: NavController) {
                     )
                     BottomNavItem(
                         icon = Icons.Default.Home,
-                        label = "Ustawienia",
+                        label = "Start",
                         onClick = { navController.navigate("start") }
                     )
                     BottomNavItem(
@@ -81,24 +84,34 @@ fun StartScreen(navController: NavController) {
             Text("Ostatnie treningi", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Przykładowa ostatnia rutyna
-            RoutineCard(
-                name = "Push Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ },
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            RoutineCard(
-                name = "Pull Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            RoutineCard(
-                name = "Leg Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ }
-            )
+            // Ostatnia rutyna
+            // pod warunkiem @OptIn i Scaffold, wewnątrz Column (tam gdzie były stare karty)
+            val routineViewModel: RoutineViewModel = viewModel()
+            val routines: List<Routine> by remember {
+                derivedStateOf { routineViewModel.routines }
+            }
+// obetnij do trzech
+            val displayRoutines = routines.take(2)
+
+            if (displayRoutines.isEmpty()) {
+                Text(
+                    text = "0",
+                    style = MaterialTheme.typography.headlineLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                displayRoutines.forEach { r ->
+                    RoutineCard(
+                        name = r.name,
+                        onStart = { navController.navigate("training_screen/${r.id}") },
+                        onEdit  = { navController.navigate("edit_routine_screen/${r.id}") },
+                        onDelete= { routineViewModel.deleteRoutine(r) }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
         }
     }
 }
