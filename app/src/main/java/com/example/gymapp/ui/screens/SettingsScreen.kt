@@ -1,10 +1,13 @@
 // ui/screens/SettingsScreen.kt
 package com.example.gymapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -13,7 +16,9 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,27 +37,53 @@ fun SettingsScreen(navController: NavController) {
         },
         bottomBar = {
             BottomAppBar {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    BottomNavItem(
-                        icon = Icons.Default.List,
-                        label = "Rutyny",
-                        onClick = { navController.navigate("routines") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Home,
-                        label = "Start",
-                        onClick = { navController.navigate("start") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Settings,
-                        label = "Ustawienia",
-                        onClick = { navController.navigate("settings") }
-                    )
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    // Rutyny
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("routines") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.List,
+                            label = "Rutyny",
+                            isSelected = false
+                        )
+                    }
+
+                    // Start
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("start") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Home,
+                            label = "Start",
+                            isSelected = false
+                        )
+                    }
+
+                    // Ustawienia
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("settings") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Settings,
+                            label = "Ustawienia",
+                            isSelected = true
+                        )
+                    }
                 }
             }
         }
