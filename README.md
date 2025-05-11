@@ -63,7 +63,7 @@ com.example.gymapp/
 ```mermaid
 flowchart TD
     %% Ekrany główne
-    Start["🏠 Start Screen<br/><small>Szybki dostęp do rutyn</small>"]
+    Start["🏠 Start Screen<br/><medium>Szybki dostęp do rutyn</medium>"]
     Settings["⚙️ Settings Screen<br/><small>Jednostki, baza ćwiczeń</small>"]
     Routines["📋 Routines Screen<br/><small>Lista i zarządzanie rutynami</small>"]
     EditRoutine["📝 Edit Routine Screen<br/><small>Budowa planu treningowego</small>"]
