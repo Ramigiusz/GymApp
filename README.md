@@ -63,12 +63,12 @@ com.example.gymapp/
 ```mermaid
 flowchart TD
     %% Ekrany główne
-    Start["🏠 Start Screen<br/><small>Szybki dostęp do rutyn</small>"]
-    Settings["⚙️ Settings Screen<br/><small>Jednostki, baza ćwiczeń</small>"]
-    Routines["📋 Routines Screen<br/><small>Lista i zarządzanie rutynami</small>"]
-    EditRoutine["📝 Edit Routine Screen<br/><small>Budowa planu treningowego</small>"]
-    Training["🏋️ Training Screen<br/><small>Trening aktywny, timer</small>"]
-    ExerciseDB["📚 Exercise Database<br/><small>Zarządzanie bazą ćwiczeń</small>"]
+    Start["🏠 Start Screen<br/><small>Szybki dostęp </small>"]
+    Settings["⚙️ Settings Screen<br/><small>Ustawienia Apki</small>"]
+    Routines["📋 Routines Screen<br/><small>Lista rutyn</small>"]
+    EditRoutine["📝 Edit Routine Screen<br/><small>Budowa Rutyny</small>"]
+    Training["🏋️ Training Screen<br/><small>Trening aktywny</small>"]
+    ExerciseDB["📚 Exercise Database<br/><small>Baza ćwiczeń</small>"]
 
     %% Nawigacja główna
     Start --> Routines
@@ -87,7 +87,7 @@ flowchart TD
 
     %% Przypis do EditRoutine
     subgraph Uwaga
-        Note1["EditRoutineScreen korzysta z bazy,<br/>ale nie pozwala jej edytowa\u0107/\"]
+        Note1["EditRoutineScreen korzysta<br/>z bazy, ale jej nie edytuje"]
     end
     EditRoutine -.-> Note1
 ```
