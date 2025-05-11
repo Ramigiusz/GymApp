@@ -1,7 +1,9 @@
 // ui/screens/SettingsScreen.kt
 package com.example.gymapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
@@ -22,7 +25,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.gymapp.ui.components.RoutineCard
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,27 +47,53 @@ fun RoutinesScreen(
         topBar = { TopAppBar(title = { Text("Lista Rutyn") }) },
         bottomBar = {
             BottomAppBar {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    BottomNavItem(
-                        icon = Icons.Default.List,
-                        label = "Rutyny",
-                        onClick = { navController.navigate("routines") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Home,
-                        label = "Start",
-                        onClick = { navController.navigate("start") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Settings,
-                        label = "Ustawienia",
-                        onClick = { navController.navigate("settings") }
-                    )
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    // Rutyny
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("routines") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.List,
+                            label = "Rutyny",
+                            isSelected = true
+                        )
+                    }
+
+                    // Start
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("start") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Home,
+                            label = "Start",
+                            isSelected = false
+                        )
+                    }
+
+                    // Ustawienia
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("settings") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Settings,
+                            label = "Ustawienia",
+                            isSelected = false
+                        )
+                    }
                 }
             }
         },

@@ -1,7 +1,12 @@
 package com.example.gymapp.ui.screens
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymapp.viewmodel.RoutineViewModel
+import com.example.gymapp.data.model.Routine
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -13,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.navigation.NavController
 import com.example.gymapp.ui.components.RoutineCard
 import kotlinx.coroutines.delay
@@ -37,27 +44,53 @@ fun StartScreen(navController: NavController) {
     Scaffold(
         bottomBar = {
             BottomAppBar {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    BottomNavItem(
-                        icon = Icons.Default.List,
-                        label = "Rutyny",
-                        onClick = { navController.navigate("routines") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Home,
-                        label = "Ustawienia",
-                        onClick = { navController.navigate("start") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Default.Settings,
-                        label = "Ustawienia",
-                        onClick = { navController.navigate("settings") }
-                    )
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    // Rutyny
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("routines") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.List,
+                            label = "Rutyny",
+                            isSelected = false
+                        )
+                    }
+
+                    // Start
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("start") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Home,
+                            label = "Start",
+                            isSelected = true
+                        )
+                    }
+
+                    // Ustawienia
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(25))
+                            .clickable { navController.navigate("settings") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Default.Settings,
+                            label = "Ustawienia",
+                            isSelected = false
+                        )
+                    }
                 }
             }
         }
@@ -81,24 +114,34 @@ fun StartScreen(navController: NavController) {
             Text("Ostatnie treningi", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Przykładowa ostatnia rutyna
-            RoutineCard(
-                name = "Push Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ },
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            RoutineCard(
-                name = "Pull Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            RoutineCard(
-                name = "Leg Day",
-                onStart = { /* TODO: Start routine */ },
-                onEdit = { /* TODO: Edit routine */ }
-            )
+            // Ostatnia rutyna
+            // pod warunkiem @OptIn i Scaffold, wewnątrz Column (tam gdzie były stare karty)
+            val routineViewModel: RoutineViewModel = viewModel()
+            val routines: List<Routine> by remember {
+                derivedStateOf { routineViewModel.routines }
+            }
+// obetnij do dwóch pierwszych wpisów
+            val displayRoutines = routines.take(2)
+
+            if (displayRoutines.isEmpty()) {
+                Text(
+                    text = "0",
+                    style = MaterialTheme.typography.headlineLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                displayRoutines.forEach { r ->
+                    RoutineCard(
+                        name = r.name,
+                        onStart = { navController.navigate("training_screen/${r.id}") },
+                        onEdit  = { navController.navigate("edit_routine_screen/${r.id}") },
+                        onDelete= { routineViewModel.deleteRoutine(r) }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
         }
     }
 }
@@ -116,23 +159,31 @@ fun getCurrentTime(): String {
 
 // 🔽 Pomocniczy composable dla przycisków w dolnym pasku
 @Composable
-fun BottomNavItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit) {
+fun BottomNavItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    isSelected: Boolean = false
+) {
+    // kolor ikony/napisu
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.primary else LocalContentColor.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .clickable(onClick = onClick)
+            .padding(vertical = 2.dp)
     ) {
         Icon(
             icon,
             contentDescription = label,
-            modifier = Modifier.size(36.dp) // zwiększony rozmiar ikon
+            modifier = Modifier.size(36.dp), // zwiększony rozmiar ikon
+            tint = contentColor
         )
         Text(
             text = label,
             textAlign = TextAlign.Center,
-            fontSize = 12.sp
+            fontSize = 12.sp,
+            color = contentColor
         )
     }
 }
