@@ -3,6 +3,9 @@ Nasza apka treningowa
 Rami Matouk
 Jan Galicki
 
+## Mockup aplikacji Colossus
+
+https://www.figma.com/design/bDmddT8Lrk0nivnTjOQsMZ/GymApp?node-id=1-6&t=UbVZhWUv40pXeFEa-1
 
 ## 🔀 Diagram nawigacji Colossus
 
