@@ -58,15 +58,6 @@ com.example.gymapp/
 
 ---
 
-## 🛠️ Wymagania techniczne
-
-* Android Studio (Kotlin + Jetpack Compose)
-* Min SDK: 24
-* Room Database 2.6.1
-* Compose Compiler: 1.5.1
-
----
-
 ## 🔄 Diagram nawigacji
 
 ```mermaid
