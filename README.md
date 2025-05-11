@@ -7,29 +7,39 @@ Jan Galicki
 
 https://www.figma.com/design/bDmddT8Lrk0nivnTjOQsMZ/GymApp?node-id=1-6&t=UbVZhWUv40pXeFEa-1
 
-## 🔀 Diagram nawigacji Colossus
+## 🔀 Diagram nawigacji – Aplikacja Colossus
 
 ```mermaid
-graph TD
-    StartScreen["🏠 Start Screen"]
-    SettingsScreen["⚙️ Settings Screen"]
-    RoutinesScreen["📋 Routines Screen"]
-    EditRoutineScreen["📝 Edit Routine Screen"]
-    TrainingScreen["🏋️ Training Screen"]
-    ExerciseDatabaseScreen["📚 Exercise Database Screen"]
+flowchart TD
+    %% Ekrany główne
+    Start["🏠 StartScreen<br/><small>Szybki dostęp do rutyn</small>"]
+    Settings["⚙️ SettingsScreen<br/><small>Jednostki, baza ćwiczeń</small>"]
+    Routines["📋 RoutinesScreen<br/><small>Lista i zarządzanie rutynami</small>"]
+    EditRoutine["📝 EditRoutineScreen<br/><small>Budowa planu treningowego</small>"]
+    Training["🏋️ TrainingScreen<br/><small>Trening aktywny, timer</small>"]
+    ExerciseDB["📚 ExerciseDatabase<br/><small>Zarządzanie bazą ćwiczeń</small>"]
 
-    StartScreen -->|Nawigacja| RoutinesScreen
-    StartScreen --> SettingsScreen
+    %% Nawigacja główna
+    Start --> Routines
+    Start --> Settings
 
-    SettingsScreen --> ExerciseDatabaseScreen
-    SettingsScreen --> StartScreen
-    SettingsScreen --> RoutinesScreen
+    Settings --> ExerciseDB
+    Settings --> Start
+    Settings --> Routines
 
-    RoutinesScreen --> EditRoutineScreen
-    RoutinesScreen --> TrainingScreen
-    RoutinesScreen --> SettingsScreen
+    Routines --> EditRoutine
+    Routines --> Training
+    Routines --> Settings
 
-    EditRoutineScreen --> RoutinesScreen
+    EditRoutine --> Routines
+    Training --> Start
 
-    TrainingScreen --> StartScreen
+    %% Przypis do EditRoutine
+    subgraph Uwaga
+        Note1[/"📎 EditRoutineScreen korzysta z bazy ćwiczeń,<br/>ale jej nie edytuje"/]
+    end
+    EditRoutine -.-> Note1
 ```
+
+
+
