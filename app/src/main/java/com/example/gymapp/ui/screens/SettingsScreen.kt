@@ -4,12 +4,16 @@ package com.example.gymapp.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
@@ -92,6 +96,17 @@ fun SettingsScreen(navController: NavController) {
             text = "Tutaj będą ustawienia",
             modifier = Modifier.padding(paddingValues)
         )
+        Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
+            Button(
+                onClick = { navController.navigate("exercises") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Create, contentDescription = "Ćwiczenia")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Zarządzaj ćwiczeniami")
+            }
+        }
+
     }
 }
 
