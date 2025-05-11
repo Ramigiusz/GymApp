@@ -87,7 +87,7 @@ flowchart TD
 
     %% Przypis do EditRoutine
     subgraph Uwaga
-        Note1["/\ud83d\udccc EditRoutineScreen korzysta z bazy \u0107wicze\u0144,<br/>ale nie pozwala jej edytowa\u0107/\"]
+        Note1["EditRoutineScreen korzysta z bazy,<br/>ale nie pozwala jej edytowa\u0107/\"]
     end
     EditRoutine -.-> Note1
 ```
