@@ -11,11 +11,14 @@ import com.example.gymapp.ui.screens.StartScreen
 import com.example.gymapp.ui.screens.SettingsScreen
 import com.example.gymapp.ui.screens.TrainingScreen
 import com.example.gymapp.ui.screens.EditRoutineScreen
+import com.example.gymapp.ui.screens.ExercisesScreen
+import com.example.gymapp.viewmodel.ExerciseViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     // jawna deklaracja typu generycznego
     val routinesViewModel: RoutineViewModel = viewModel<RoutineViewModel>()
+    val exercisesViewModel: ExerciseViewModel = viewModel<ExerciseViewModel>()
 
     NavHost(navController, startDestination = "start") {
         composable("start") {
@@ -42,8 +45,10 @@ fun NavGraph(navController: NavHostController) {
             val routineId = backStackEntry.arguments
                 ?.getString("routineId")
                 ?.toIntOrNull()
-            // tu podajesz ten sam VM
             EditRoutineScreen(navController, routineId, routinesViewModel)
+        }
+        composable("exercises") {
+            ExercisesScreen(exercisesViewModel)
         }
     }
 }
