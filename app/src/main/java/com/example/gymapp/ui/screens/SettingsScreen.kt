@@ -1,6 +1,9 @@
 // ui/screens/SettingsScreen.kt
 package com.example.gymapp.ui.screens
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,21 +95,125 @@ fun SettingsScreen(navController: NavController) {
             }
         }
     ) { paddingValues ->
-        Text(
-            text = "Tutaj będą ustawienia",
-            modifier = Modifier.padding(paddingValues)
-        )
-        Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
-            Button(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())   // umożliwia przewijanie
+                .padding(paddingValues)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
+            OutlinedButton(
                 onClick = { navController.navigate("exercises") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                Icon(Icons.Default.Create, contentDescription = "Ćwiczenia")
-                Spacer(modifier = Modifier.width(8.dp))
                 Text("Zarządzaj ćwiczeniami")
             }
-        }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 2")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 3")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 4")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 5")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 6")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 7")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 8")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 9")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 10")
+            }
+            OutlinedButton(
+                onClick = { /* nic nie rób */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Opcja 11")
+            }
 
+        }
     }
 }
-

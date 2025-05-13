@@ -1,10 +1,9 @@
+// ui/screens/ExercisesScreen.kt
 package com.example.gymapp.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -52,7 +51,7 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        viewModel.addExercise(name, description)
+                        viewModel.addExercise(name.trim(), description.trim())
                         name = ""
                         description = ""
                     }
@@ -68,9 +67,17 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 4.dp)
+            ) {
                 items(viewModel.exercises) { exercise ->
-                    ExerciseItem(exercise, onDelete = { viewModel.deleteExercise(it) })
+                    ExerciseItem(
+                        exercise = exercise,
+                        onDelete = { viewModel.deleteExercise(it) },
+                        onEdit = { viewModel.updateExercise(it) }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }
