@@ -7,16 +7,19 @@ import androidx.room.RoomDatabase
 import com.example.gymapp.data.dao.ExerciseDao
 import com.example.gymapp.data.dao.RoutineDao
 import com.example.gymapp.data.dao.RoutineExerciseDao
+import com.example.gymapp.data.dao.RoutineExerciseSetDao
 import com.example.gymapp.data.model.Exercise
 import com.example.gymapp.data.model.Routine
 import com.example.gymapp.data.model.RoutineExercise
+import com.example.gymapp.data.model.RoutineExerciseSet
 
-@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class], version = 3)
+@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class, RoutineExerciseSet::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun routineDao(): RoutineDao
     abstract fun exerciseDao(): ExerciseDao
     abstract fun routineExerciseDao(): RoutineExerciseDao
+    abstract fun routineExerciseSetDao(): RoutineExerciseSetDao
 
     companion object {
         @Volatile

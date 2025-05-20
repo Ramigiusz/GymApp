@@ -5,21 +5,23 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymapp.data.db.AppDatabase
+import com.example.gymapp.data.draft.ExerciseSetDraft
+import com.example.gymapp.data.draft.RoutineExerciseDraft
 import com.example.gymapp.data.model.Routine
 import com.example.gymapp.data.model.RoutineExercise
-import com.example.gymapp.ui.screens.RoutineExerciseDraft
+import com.example.gymapp.data.model.RoutineExerciseSet
 import kotlinx.coroutines.launch
 
 class RoutineViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val routineDao = AppDatabase.getDatabase(application).routineDao()
-    private val routineExerciseDao = AppDatabase.getDatabase(application).routineExerciseDao()
-    private val exerciseDao = AppDatabase.getDatabase(application).exerciseDao()
+    private val db = AppDatabase.getDatabase(application)
+    private val routineDao = db.routineDao()
+    private val routineExerciseDao = db.routineExerciseDao()
+    private val routineExerciseSetDao = db.routineExerciseSetDao()
+    private val exerciseDao = db.exerciseDao()
 
     var routines by mutableStateOf(listOf<Routine>())
         private set
-
-    var newRoutineName by mutableStateOf("")
 
     init {
         loadRoutines()
@@ -43,12 +45,13 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             val routine = routines.find { it.id == id }
             if (routine != null) {
-                val updatedRoutine = routine.copy(name = name)
-                routineDao.updateRoutine(updatedRoutine)
+                val updated = routine.copy(name = name)
+                routineDao.updateRoutine(updated)
                 loadRoutines()
             }
         }
     }
+
     fun deleteRoutine(routine: Routine) {
         viewModelScope.launch {
             routineDao.deleteRoutine(routine)
@@ -76,42 +79,59 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
             }
 
             exercises.forEach { draft ->
-                val exercise = RoutineExercise(
+                val routineExercise = RoutineExercise(
                     routineId = id,
                     exerciseId = draft.exercise.id,
-                    sets = draft.sets,
-                    reps = draft.reps,
-                    rpe = draft.rpe,
                     restTimeMs = (draft.restMinutes * 60 + draft.restSeconds) * 1000
                 )
-                routineExerciseDao.insert(exercise)
+                val routineExerciseId = routineExerciseDao.insert(routineExercise).toInt()
+
+                val sets = draft.sets.map {
+                    RoutineExerciseSet(
+                        routineExerciseId = routineExerciseId,
+                        reps = it.reps,
+                        rpe = it.rpe,
+                        weight = it.weight,
+                        completed = it.completed
+                    )
+                }
+
+                routineExerciseSetDao.insertAll(sets)
             }
 
             loadRoutines()
         }
     }
+
     fun loadExercisesForRoutine(
         routineId: Int,
         onLoaded: (List<RoutineExerciseDraft>) -> Unit
     ) {
         viewModelScope.launch {
-            val rels = routineExerciseDao.getByRoutineId(routineId)
             val allExercises = exerciseDao.getAllExercises()
-            val drafts = rels.mapNotNull { rel ->
-                val ex = allExercises.find { it.id == rel.exerciseId } ?: return@mapNotNull null
+            val relations = routineExerciseDao.getByRoutineId(routineId)
+
+            val drafts = relations.mapNotNull { rel ->
+                val exercise = allExercises.find { it.id == rel.exerciseId } ?: return@mapNotNull null
+                val sets = routineExerciseSetDao.getByRoutineExerciseId(rel.id)
+
                 RoutineExerciseDraft(
-                    exercise = ex,
-                    sets = rel.sets,
-                    reps = rel.reps,
-                    rpe = rel.rpe,
+                    exercise = exercise,
+                    sets = sets.map {
+                        ExerciseSetDraft(
+                            reps = it.reps,
+                            rpe = it.rpe,
+                            weight = it.weight,
+                            completed = it.completed
+                        )
+                    }.toCollection(mutableStateListOf()), // ⬅ KLUCZOWA ZMIANA
                     restMinutes = (rel.restTimeMs / 1000) / 60,
                     restSeconds = (rel.restTimeMs / 1000) % 60
                 )
             }
+
             onLoaded(drafts)
         }
     }
-
 }
-
 

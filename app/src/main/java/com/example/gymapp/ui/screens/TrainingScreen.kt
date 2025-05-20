@@ -14,8 +14,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.gymapp.data.draft.RoutineExerciseDraft
 import com.example.gymapp.viewmodel.RoutineViewModel
-import com.example.gymapp.ui.screens.RoutineExerciseDraft
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
@@ -132,13 +132,6 @@ fun TrainingScreen(
                                     Spacer(Modifier.height(4.dp))
                                     Text(draft.exercise.description, style = MaterialTheme.typography.bodyMedium)
                                 }
-
-                                Spacer(Modifier.height(8.dp))
-
-                                Text(
-                                    "Serie: ${draft.sets}   Powtórzenia: ${draft.reps}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
 
                                 Spacer(Modifier.height(8.dp))
 
