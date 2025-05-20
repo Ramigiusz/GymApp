@@ -9,7 +9,7 @@ import com.example.gymapp.data.model.RoutineExercise
 interface RoutineExerciseDao {
 
     @Insert
-    suspend fun insert(routineExercise: RoutineExercise)
+    suspend fun insert(routineExercise: RoutineExercise): Long
 
     @Query("SELECT * FROM routine_exercises WHERE routineId = :routineId")
     suspend fun getByRoutineId(routineId: Int): List<RoutineExercise>
