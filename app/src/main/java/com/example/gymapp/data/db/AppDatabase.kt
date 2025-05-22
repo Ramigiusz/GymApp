@@ -12,8 +12,10 @@ import com.example.gymapp.data.model.Exercise
 import com.example.gymapp.data.model.Routine
 import com.example.gymapp.data.model.RoutineExercise
 import com.example.gymapp.data.model.RoutineExerciseSet
+import com.example.gymapp.data.model.Tag
+import com.example.gymapp.data.model.ExerciseTagCrossRef
 
-@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class, RoutineExerciseSet::class], version = 4)
+@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class, RoutineExerciseSet::class, Tag::class, ExerciseTagCrossRef::class], version = 5)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun routineDao(): RoutineDao

@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymapp.data.db.AppDatabase
 import com.example.gymapp.data.model.Exercise
+import com.example.gymapp.data.model.Tag
+import com.example.gymapp.data.model.ExerciseTagCrossRef
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
 
@@ -20,6 +22,27 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
 
     init {
         loadExercises()
+        viewModelScope.launch {
+            if (dao.getAllExercises().isEmpty()) {
+                // 1) Dodaj dwa ćwiczenia
+                val squatId = dao.insertExercise(
+                    Exercise(name="Przysiad",
+                        description="Stań na szerokość barków, schodź w dół, pilnując kolan.")
+                ).toInt()
+                val pushUpId = dao.insertExercise(
+                    Exercise(name="Pompka",
+                        description="Deska: opuść ciało, aż łokcie zgięte pod kątem 90°.")
+                ).toInt()
+                // 2) Dodaj tagi
+                listOf("Nogi","Klatka","Tricepsy","Plecy","Bicepsy","Barki").forEach {
+                    dao.insertTag(Tag(it))
+                }
+                // 3) Połącz ćwiczenia z tagami
+                dao.insertCrossRef(ExerciseTagCrossRef(squatId, "Nogi"))
+                dao.insertCrossRef(ExerciseTagCrossRef(pushUpId, "Klatka"))
+                dao.insertCrossRef(ExerciseTagCrossRef(pushUpId, "Tricepsy"))
+            }
+        }
     }
 
     fun loadExercises() {
