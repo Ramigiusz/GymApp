@@ -35,7 +35,7 @@ fun EditRoutineScreen(
 ) {
     var routineName by remember { mutableStateOf("") }
     val allExercises = viewModelExercise.exercises
-    var draftExercises = remember { mutableStateListOf<RoutineExerciseDraft>() }
+    val draftExercises = remember { mutableStateListOf<RoutineExerciseDraft>() }
     var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(routineId) {
