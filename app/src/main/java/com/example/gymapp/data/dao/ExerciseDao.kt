@@ -11,9 +11,12 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises")
     suspend fun getAllExercises(): List<Exercise>
 
+    @Query("SELECT * FROM tags")
+    suspend fun getAllTags(): List<Tag>
+
     @Transaction
     @Query("SELECT * FROM exercises")
-    fun getAllExercisesWithTags(): List<ExerciseWithTags>
+    suspend fun getAllExercisesWithTags(): List<ExerciseWithTags>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertExercise(ex: Exercise): Long

@@ -9,26 +9,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gymapp.ui.components.ExerciseWithTagItem
 import com.example.gymapp.viewmodel.ExerciseViewModel
-import com.example.gymapp.data.model.Exercise
-import com.example.gymapp.ui.components.ExerciseItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
+    // —— formularz dodawania ćwiczenia ——
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
+    // —— pobieramy ćwiczenia z tagami ——
+    val exercisesWithTags by remember { derivedStateOf { viewModel.allExercisesWithTags } }
+
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Baza ćwiczeń") })
-        }
+        topBar = { TopAppBar(title = { Text("Baza ćwiczeń") }) }
     ) { padding ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxSize()
         ) {
             OutlinedTextField(
                 value = name,
@@ -36,18 +37,14 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
                 label = { Text("Nazwa ćwiczenia") },
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Opis ćwiczenia") },
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Spacer(Modifier.height(8.dp))
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
@@ -60,24 +57,25 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
             ) {
                 Text("Dodaj ćwiczenie")
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
             Text("Lista ćwiczeń:", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-
+            // —— lista ćwiczeń z tagami, przewijalna ——
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(vertical = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(viewModel.exercises) { exercise ->
-                    ExerciseItem(
-                        exercise = exercise,
+                items(exercisesWithTags, key = { it.exercise.id }) { ewt ->
+                    ExerciseWithTagItem(
+                        ewt = ewt,
                         onDelete = { viewModel.deleteExercise(it) },
                         onEdit = { viewModel.updateExercise(it) }
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }
