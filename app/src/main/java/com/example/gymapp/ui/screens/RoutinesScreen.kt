@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.example.gymapp.data.model.Routine
 import com.example.gymapp.ui.components.RoutineCard
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymapp.viewmodel.RoutineViewModel
@@ -41,15 +43,19 @@ fun RoutinesScreen(
     viewModel: RoutineViewModel = viewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var routineToDelete by remember { mutableStateOf<com.example.gymapp.data.model.Routine?>(null) }
+    var routineToDelete by remember { mutableStateOf<Routine?>(null) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Lista Rutyn") }) },
+        topBar = {
+            TopAppBar(title = { Text("Lista Rutyn") })
+        },
         bottomBar = {
             BottomAppBar {
-                Row(modifier = Modifier.fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically) {
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     // Rutyny
                     Box(
                         modifier = Modifier
@@ -99,10 +105,10 @@ fun RoutinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("edit_routine_screen/0") }, // 0 = nowa rutyna
+                onClick = { navController.navigate("edit_routine_screen/0") },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Routine")
+                Icon(Icons.Default.Add, contentDescription = "Dodaj nową rutynę")
             }
         }
     ) { padding ->
@@ -112,44 +118,48 @@ fun RoutinesScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(viewModel.routines.size) { index ->
-                    val routine = viewModel.routines[index]
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(viewModel.routines, key = { it.id }) { routine ->
                     RoutineCard(
                         name = routine.name,
-                        onStart = { navController.navigate("training_screen/${routine.id}") },
-                        onEdit = { navController.navigate("edit_routine_screen/${routine.id}") },
+                        onStart = {
+                            navController.navigate("training_screen/${routine.id}")
+                        },
+                        onEdit = {
+                            navController.navigate("edit_routine_screen/${routine.id}")
+                        },
                         onDelete = {
                             routineToDelete = routine
                             showDialog = true
                         }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
 
-        // Popup dialog
+        // Dialog potwierdzenia usunięcia
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
-                title = { Text("Delete Routine") },
-                text = { Text("Are you sure you want to delete this routine?") },
+                title = { Text("Usuń rutynę?") },
+                text = { Text("Czy na pewno chcesz usunąć tę rutynę?") },
                 confirmButton = {
                     TextButton(onClick = {
                         routineToDelete?.let { viewModel.deleteRoutine(it) }
                         showDialog = false
                     }) {
-                        Text("Yes")
+                        Text("Tak")
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showDialog = false }) {
-                        Text("No")
+                        Text("Nie")
                     }
                 }
             )
         }
     }
 }
-

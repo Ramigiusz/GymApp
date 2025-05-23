@@ -36,6 +36,7 @@ fun RoutineCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            // karta klikalna całkowicie uruchamia start
             .clickable { onStart() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp)
@@ -47,17 +48,19 @@ fun RoutineCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // ▶️ Start
                 IconButton(onClick = { onStart() }) {
                     Icon(Icons.Default.PlayArrow, contentDescription = "Start")
                 }
+                // ✏️ Edytuj
                 IconButton(onClick = { onEdit() }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    Icon(Icons.Default.Edit, contentDescription = "Edytuj")
                 }
+                // 🗑️ Usuń
                 IconButton(onClick = { onDelete?.invoke() }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    Icon(Icons.Default.Delete, contentDescription = "Usuń")
                 }
             }
         }
     }
 }
-
