@@ -1,6 +1,6 @@
-// ui/screens/TrainingScreen.kt
 package com.example.gymapp.ui.screens
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,13 +10,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.gymapp.R
 import com.example.gymapp.data.draft.RoutineExerciseDraft
+import com.example.gymapp.data.model.ExerciseLog
+import com.example.gymapp.data.db.AppDatabase
 import com.example.gymapp.viewmodel.RoutineViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,9 +33,19 @@ fun TrainingScreen(
     routineId: Int?,
     viewModel: RoutineViewModel = viewModel()
 ) {
-    // Stoper
+    val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.clock_alarm) }
+    val coroutineScope = rememberCoroutineScope()
+    val db = AppDatabase.getDatabase(context)
+    val exerciseLogDao = db.exerciseLogDao()
+
     var elapsedMs by remember { mutableStateOf(0L) }
     var isRunning by remember { mutableStateOf(false) }
+
+    var restTimeLeft by remember { mutableStateOf(0) }
+    var isResting by remember { mutableStateOf(false) }
+
+    var showRestEndDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRunning) {
         if (isRunning) {
@@ -39,13 +56,33 @@ fun TrainingScreen(
         }
     }
 
-    // Lista ćwiczeń
+    LaunchedEffect(isResting) {
+        if (isResting && restTimeLeft > 0) {
+            while (restTimeLeft > 0) {
+                delay(1000L)
+                restTimeLeft -= 1
+            }
+            isResting = false
+            mediaPlayer.seekTo(0)
+            mediaPlayer.start()
+            showRestEndDialog = true
+        }
+    }
+
     var draftExercises by remember { mutableStateOf<List<RoutineExerciseDraft>>(emptyList()) }
+    var lastLogs by remember { mutableStateOf<Map<Int, ExerciseLog>>(emptyMap()) }
 
     LaunchedEffect(routineId) {
         routineId?.let { id ->
             viewModel.loadExercisesForRoutine(id) { loaded ->
                 draftExercises = loaded
+                isRunning = true
+                coroutineScope.launch {
+                    lastLogs = loaded.mapNotNull { draft ->
+                        val log = exerciseLogDao.getLastLogForExercise(draft.exercise.id)
+                        log?.let { draft.exercise.id to it }
+                    }.toMap()
+                }
             }
         }
     }
@@ -53,13 +90,26 @@ fun TrainingScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Trening") },
+                title = {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Trening")
+                        Text(
+                            text = "🕒 ${formatElapsed(elapsedMs)}",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Wróć")
                     }
                 }
             )
+
         }
     ) { padding ->
         Column(
@@ -68,43 +118,16 @@ fun TrainingScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // STOPER
+            Spacer(Modifier.height(4.dp))
+
+            val restColor = if (restTimeLeft <= 10 && isResting) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             Text(
-                text = formatElapsed(elapsedMs),
-                style = MaterialTheme.typography.headlineMedium,
+                text = "⏳ Przerwa: ${formatRestTime(restTimeLeft)}",
+                style = MaterialTheme.typography.titleMedium.copy(color = restColor),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+
             Spacer(Modifier.height(8.dp))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                IconButton(onClick = { isRunning = true }, enabled = !isRunning) {
-                    Icon(
-                        painter = painterResource(android.R.drawable.ic_media_play),
-                        contentDescription = "Start"
-                    )
-                }
-                IconButton(onClick = { isRunning = false }, enabled = isRunning) {
-                    Icon(
-                        painter = painterResource(android.R.drawable.ic_media_pause),
-                        contentDescription = "Pauza"
-                    )
-                }
-                IconButton(onClick = {
-                    isRunning = false
-                    elapsedMs = 0L
-                }) {
-                    Icon(
-                        painter = painterResource(android.R.drawable.ic_menu_revert),
-                        contentDescription = "Reset"
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // LISTA ĆWICZEŃ
             Text("Ćwiczenia w rutynie:", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
 
@@ -117,9 +140,7 @@ fun TrainingScreen(
                         .weight(1f),
                     contentPadding = PaddingValues(vertical = 4.dp)
                 ) {
-                    items(draftExercises, key = { it.exercise.id }) { draft ->
-                        var weightInput by remember { mutableStateOf("") }
-
+                    items(draftExercises.withIndex().toList(), key = { (index, item) -> "${item.exercise.id}_$index" }) { (_, draft) ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -128,6 +149,14 @@ fun TrainingScreen(
                         ) {
                             Column(Modifier.padding(12.dp)) {
                                 Text(draft.exercise.name, style = MaterialTheme.typography.titleMedium)
+
+                                lastLogs[draft.exercise.id]?.let { log ->
+                                    Text(
+                                        "Ostatni wynik: ${log.reps} × ${log.weight}kg (RPE ${log.rpe})",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+
                                 if (draft.exercise.description.isNotBlank()) {
                                     Spacer(Modifier.height(4.dp))
                                     Text(draft.exercise.description, style = MaterialTheme.typography.bodyMedium)
@@ -135,26 +164,142 @@ fun TrainingScreen(
 
                                 Spacer(Modifier.height(8.dp))
 
-                                OutlinedTextField(
-                                    value = weightInput,
-                                    onValueChange = { weightInput = it },
-                                    label = { Text("Ciężar (kg)") },
-                                    singleLine = true,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                draft.sets.forEachIndexed { index, set ->
+                                    val lastLog = lastLogs[draft.exercise.id]
+
+                                    val repsState = remember {
+                                        mutableStateOf(
+                                            if (set.reps == 10 && lastLog != null) {
+                                                set.reps = lastLog.reps
+                                                lastLog.reps.toString()
+                                            } else set.reps.toString()
+                                        )
+                                    }
+
+                                    val weightState = remember {
+                                        mutableStateOf(
+                                            if (set.weight == 0f && lastLog != null) {
+                                                set.weight = lastLog.weight
+                                                lastLog.weight.toString()
+                                            } else set.weight.toString()
+                                        )
+                                    }
+
+                                    val completedState = remember { mutableStateOf(set.completed) }
+
+                                    val rowAlpha = if (completedState.value) 0.5f else 1f
+                                    val textStyle = if (completedState.value)
+                                        LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough)
+                                    else LocalTextStyle.current
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                            .alpha(rowAlpha),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        OutlinedTextField(
+                                            value = repsState.value,
+                                            onValueChange = {
+                                                repsState.value = it
+                                                set.reps = it.toIntOrNull() ?: set.reps
+                                            },
+                                            label = { Text("Powt.") },
+                                            modifier = Modifier.weight(1f),
+                                            textStyle = textStyle
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        OutlinedTextField(
+                                            value = weightState.value,
+                                            onValueChange = {
+                                                weightState.value = it
+                                                set.weight = it.toFloatOrNull() ?: set.weight
+                                            },
+                                            label = { Text("Ciężar (kg)") },
+                                            modifier = Modifier.weight(1f),
+                                            textStyle = textStyle
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("@ ${set.rpe}")
+                                        Spacer(Modifier.width(8.dp))
+                                        Checkbox(
+                                            checked = completedState.value,
+                                            onCheckedChange = { checked ->
+                                                completedState.value = checked
+                                                set.completed = checked
+
+                                                if (checked) {
+                                                    restTimeLeft = draft.restMinutes * 60 + draft.restSeconds
+                                                    isResting = true
+
+                                                    // Zapisz log do ExerciseLog
+                                                    val reps = repsState.value.toIntOrNull() ?: set.reps
+                                                    val weight = weightState.value.toFloatOrNull() ?: set.weight
+
+                                                    val rpe = set.rpe
+                                                    if (reps != null && weight != null) {
+                                                        coroutineScope.launch {
+                                                            val log = ExerciseLog(
+                                                                exerciseId = draft.exercise.id,
+                                                                reps = reps,
+                                                                weight = weight,
+                                                                rpe = rpe
+                                                            )
+                                                            exerciseLogDao.insert(log)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+            Spacer(Modifier.height(16.dp))
+
+            if (draftExercises.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        isRunning = false
+                        // możesz dodać dialog, nawigację lub logikę zapisu podsumowania
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text("✅ Zakończ trening")
+                }
+            }
         }
+    }
+
+    if (showRestEndDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestEndDialog = false },
+            title = { Text("Przerwa zakończona") },
+            text = { Text("Czas wrócić do treningu!") },
+            confirmButton = {
+                Button(onClick = { showRestEndDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
-// Format czasu
 private fun formatElapsed(ms: Long): String {
     val hours = TimeUnit.MILLISECONDS.toHours(ms)
     val minutes = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
     val seconds = TimeUnit.MILLISECONDS.toSeconds(ms) % 60
     return "%02d:%02d:%02d".format(hours, minutes, seconds)
+}
+
+private fun formatRestTime(seconds: Int): String {
+    val min = seconds / 60
+    val sec = seconds % 60
+    return "%01d:%02d".format(min, sec)
 }

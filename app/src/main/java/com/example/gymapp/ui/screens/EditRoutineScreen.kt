@@ -52,138 +52,144 @@ fun EditRoutineScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(if (routineId == 0) "New Routine" else "Edit Routine") })
+            TopAppBar(title = { Text(if (routineId == 0) "Nowa Rutyna" else "Edytuj Rutynę") })
         }
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            OutlinedTextField(
-                value = routineName,
-                onValueChange = { routineName = it },
-                label = { Text("Routine Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = { expanded = true }) {
-                Text("Dodaj ćwiczenie")
+            item {
+                OutlinedTextField(
+                    value = routineName,
+                    onValueChange = { routineName = it },
+                    label = { Text("Nazwa Rutyny") },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                allExercises.forEach { exercise ->
-                    DropdownMenuItem(
-                        text = { Text(exercise.name) },
-                        onClick = {
-                            draftExercises.add(RoutineExerciseDraft(exercise))
-                            expanded = false
-                        }
-                    )
+            item {
+                Button(onClick = { expanded = true }) {
+                    Text("Dodaj ćwiczenie")
+                }
+
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    allExercises.forEach { exercise ->
+                        DropdownMenuItem(
+                            text = { Text(exercise.name) },
+                            onClick = {
+                                draftExercises.add(RoutineExerciseDraft(exercise))
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Ćwiczenia w rutynie:", style = MaterialTheme.typography.titleMedium)
+            item {
+                Text("Ćwiczenia w rutynie:", style = MaterialTheme.typography.titleMedium)
+            }
 
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(draftExercises, key = { it.exercise.id }) { item ->
-                    var showDialog by remember { mutableStateOf(false) }
-                    var minutesText by remember { mutableStateOf(TextFieldValue(item.restMinutes.toString())) }
-                    var secondsText by remember { mutableStateOf(TextFieldValue(item.restSeconds.toString())) }
+            items(draftExercises.withIndex().toList(), key = { (index, item) -> "${item.exercise.id}_$index" }) { (_, item) ->
+                var showDialog by remember { mutableStateOf(false) }
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(item.exercise.name, style = MaterialTheme.typography.titleMedium)
-                                Row {
-                                    IconButton(onClick = { showDialog = true }) {
-                                        Icon(Icons.Outlined.Lock, contentDescription = "Ustaw przerwę")
-                                    }
-                                    IconButton(onClick = { draftExercises.remove(item) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Usuń ćwiczenie")
-                                    }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(item.exercise.name, style = MaterialTheme.typography.titleMedium)
+                            Row {
+                                IconButton(onClick = { showDialog = true }) {
+                                    Icon(Icons.Outlined.Lock, contentDescription = "Ustaw przerwę")
+                                }
+                                IconButton(onClick = { draftExercises.remove(item) }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Usuń ćwiczenie")
                                 }
                             }
-                            if (showDialog) {
-                                    RestTimePickerDialog(
-                                        initialMinutes = item.restMinutes,
-                                        initialSeconds = item.restSeconds,
-                                        onDismiss = { showDialog = false },
-                                        onConfirm = { min, sec ->
-                                            item.restMinutes = min
-                                            item.restSeconds = sec
-                                            showDialog = false
-                                        }
-                                    )
+                        }
+
+                        if (showDialog) {
+                            RestTimePickerDialog(
+                                initialMinutes = item.restMinutes,
+                                initialSeconds = item.restSeconds,
+                                onDismiss = { showDialog = false },
+                                onConfirm = { min, sec ->
+                                    item.restMinutes = min
+                                    item.restSeconds = sec
+                                    showDialog = false
                                 }
+                            )
+                        }
 
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Serie:", style = MaterialTheme.typography.labelLarge)
 
-                                Spacer(modifier = Modifier.height(8.dp))
-                            Text("Serie:", style = MaterialTheme.typography.labelLarge)
-
-                            item.sets.forEachIndexed { index, set ->
-                                Row(Modifier.fillMaxWidth()) {
-                                    OutlinedTextField(
-                                        value = set.reps.toString(),
-                                        onValueChange = {
-                                            set.reps = it.toIntOrNull() ?: set.reps
-                                        },
-                                        label = { Text("Powt.") },
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    OutlinedTextField(
-                                        value = set.rpe.toString(),
-                                        onValueChange = {
-                                            set.rpe = it.toFloatOrNull() ?: set.rpe
-                                        },
-                                        label = { Text("RPE") },
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    IconButton(onClick = {
-                                        item.sets.removeAt(index)
-                                    }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Usuń serię")
-                                    }
+                        item.sets.forEachIndexed { index, set ->
+                            Row(Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = set.reps.toString(),
+                                    onValueChange = {
+                                        val input = it.toIntOrNull()
+                                        if (input != null) set.reps = input
+                                    },
+                                    label = { Text("Powt.") },
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                    singleLine = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                OutlinedTextField(
+                                    value = set.rpe.toString(),
+                                    onValueChange = {
+                                        val input = it.toFloatOrNull()
+                                        if (input != null) set.rpe = input
+                                    },
+                                    label = { Text("RPE") },
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                                    singleLine = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(onClick = {
+                                    if (item.sets.size > 1) item.sets.removeAt(index)
+                                }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Usuń serię")
                                 }
-
-                                Spacer(modifier = Modifier.height(4.dp))
                             }
-
                             Spacer(modifier = Modifier.height(4.dp))
-                            Button(onClick = {
-                                item.sets.add(ExerciseSetDraft())
-                            }) {
-                                Text("Dodaj serię")
-                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Button(onClick = {
+                            item.sets.add(ExerciseSetDraft())
+                        }) {
+                            Text("Dodaj serię")
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    viewModel.saveRoutineWithExercises(routineName, routineId, draftExercises)
-                    navController.popBackStack()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Zapisz rutynę")
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        viewModel.saveRoutineWithExercises(routineName, routineId, draftExercises)
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Zapisz rutynę")
+                }
             }
         }
     }
