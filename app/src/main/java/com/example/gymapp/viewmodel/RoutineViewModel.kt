@@ -24,7 +24,22 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         private set
 
     init {
-        loadRoutines()
+        viewModelScope.launch {
+            // 1. Załaduj istniejące
+            routines = routineDao.getAllRoutines()
+            // 2. Jeśli żadnych rutyn, dopisz dwie przykładowe
+            if (routines.isEmpty()) {
+                // przykładowe nazwy
+                val sample1 = Routine(name = "Full Body Basics")
+                val sample2 = Routine(name = "Upper Body Blast")
+
+                routineDao.insertRoutine(sample1)
+                routineDao.insertRoutine(sample2)
+
+                // odśwież listę
+                routines = routineDao.getAllRoutines()
+            }
+        }
     }
 
     fun loadRoutines() {
@@ -65,37 +80,35 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         exercises: List<RoutineExerciseDraft>
     ) {
         viewModelScope.launch {
-            val routine: Routine
-            val id: Int
-
-            if (routineId == null || routineId == 0) {
-                routine = Routine(name = name)
-                id = routineDao.insertRoutineReturningId(routine).toInt()
+            val id = if (routineId == null || routineId == 0) {
+                // nowa rutyna
+                routineDao.insertRoutineReturningId(Routine(name = name)).toInt()
             } else {
-                routine = Routine(id = routineId, name = name)
-                routineDao.updateRoutine(routine)
-                id = routineId
-                routineExerciseDao.deleteByRoutineId(id)
+                // update istniejącej
+                routineDao.updateRoutine(Routine(id = routineId, name = name))
+                routineExerciseDao.deleteByRoutineId(routineId)
+                routineId
             }
 
+            // wstaw ćwiczenia i zestawy
             exercises.forEach { draft ->
-                val routineExercise = RoutineExercise(
-                    routineId = id,
-                    exerciseId = draft.exercise.id,
-                    restTimeMs = (draft.restMinutes * 60 + draft.restSeconds) * 1000
-                )
-                val routineExerciseId = routineExerciseDao.insert(routineExercise).toInt()
+                val relId = routineExerciseDao.insert(
+                    RoutineExercise(
+                        routineId = id,
+                        exerciseId = draft.exercise.id,
+                        restTimeMs = (draft.restMinutes * 60 + draft.restSeconds) * 1000
+                    )
+                ).toInt()
 
                 val sets = draft.sets.map {
                     RoutineExerciseSet(
-                        routineExerciseId = routineExerciseId,
+                        routineExerciseId = relId,
                         reps = it.reps,
                         rpe = it.rpe,
                         weight = it.weight,
                         completed = it.completed
                     )
                 }
-
                 routineExerciseSetDao.insertAll(sets)
             }
 
