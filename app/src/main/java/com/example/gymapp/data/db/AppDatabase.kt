@@ -17,7 +17,7 @@ import com.example.gymapp.data.model.RoutineExerciseSet
 import com.example.gymapp.data.model.Tag
 import com.example.gymapp.data.model.ExerciseTagCrossRef
 
-@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class, RoutineExerciseSet::class, Tag::class, ExerciseTagCrossRef::class, ExerciseLog::class], version = 6)
+@Database(entities = [Routine::class, Exercise::class, RoutineExercise::class, RoutineExerciseSet::class, Tag::class, ExerciseTagCrossRef::class, ExerciseLog::class], version = 7)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun routineDao(): RoutineDao
@@ -37,8 +37,9 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "colossus_db"
                 )
-                    .fallbackToDestructiveMigration() //
-                    .build().also { INSTANCE = it }
+                    .fallbackToDestructiveMigration() // pozwoli zniszczyć starą i stworzyć nową
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }

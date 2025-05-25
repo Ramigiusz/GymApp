@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.gymapp.viewmodel.RoutineViewModel                    // <-- dodaj ten import
+import com.example.gymapp.viewmodel.RoutineViewModel
 import com.example.gymapp.ui.screens.RoutinesScreen
 import com.example.gymapp.ui.screens.StartScreen
 import com.example.gymapp.ui.screens.SettingsScreen
@@ -48,7 +48,7 @@ fun NavGraph(navController: NavHostController) {
             EditRoutineScreen(navController, routineId, routinesViewModel)
         }
         composable("exercises") {
-            ExercisesScreen(exercisesViewModel)
+            ExercisesScreen(navController, exercisesViewModel)
         }
     }
 }

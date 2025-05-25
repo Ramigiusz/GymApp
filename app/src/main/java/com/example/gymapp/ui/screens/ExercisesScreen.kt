@@ -4,32 +4,41 @@ package com.example.gymapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gymapp.ui.components.ExerciseWithTagItem
 import com.example.gymapp.viewmodel.ExerciseViewModel
+import com.example.gymapp.data.model.Exercise
+import com.example.gymapp.ui.components.ExerciseItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
-    // —— formularz dodawania ćwiczenia ——
+fun ExercisesScreen(navController: NavController, viewModel: ExerciseViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    // —— pobieramy ćwiczenia z tagami ——
-    val exercisesWithTags by remember { derivedStateOf { viewModel.allExercisesWithTags } }
-
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Baza ćwiczeń") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("Baza ćwiczeń") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Wróć")
+                    }
+                }
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
+                .fillMaxSize()
         ) {
             OutlinedTextField(
                 value = name,
@@ -37,14 +46,18 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
                 label = { Text("Nazwa ćwiczenia") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Opis ćwiczenia") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
@@ -57,25 +70,24 @@ fun ExercisesScreen(viewModel: ExerciseViewModel = viewModel()) {
             ) {
                 Text("Dodaj ćwiczenie")
             }
-            Spacer(Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text("Lista ćwiczeń:", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
 
-            // —— lista ćwiczeń z tagami, przewijalna ——
+            Spacer(modifier = Modifier.height(8.dp))
+
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 4.dp)
             ) {
-                items(exercisesWithTags, key = { it.exercise.id }) { ewt ->
-                    ExerciseWithTagItem(
-                        ewt = ewt,
+                items(viewModel.exercises) { exercise ->
+                    ExerciseItem(
+                        exercise = exercise,
                         onDelete = { viewModel.deleteExercise(it) },
                         onEdit = { viewModel.updateExercise(it) }
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }
