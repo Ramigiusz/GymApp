@@ -109,10 +109,10 @@ fun StartScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(32.dp)) // przerwa między datą a godziną
             Text(currentTime, fontSize = 64.sp, style = MaterialTheme.typography.titleLarge)
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Ostatnie treningi", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
+            Text("Ostatnie treningi", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Ostatnia rutyna
             // pod warunkiem @OptIn i Scaffold, wewnątrz Column (tam gdzie były stare karty)
