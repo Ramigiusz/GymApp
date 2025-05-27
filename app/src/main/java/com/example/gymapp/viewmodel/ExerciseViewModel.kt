@@ -40,7 +40,7 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
     }
 
     // załadowanie ćwiczeń
-    fun loadExercises() = viewModelScope.launch {
+    private fun loadExercises() = viewModelScope.launch {
         exercises = dao.getAllExercises()
     }
 

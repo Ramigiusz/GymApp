@@ -30,11 +30,13 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
             // 2. Jeśli żadnych rutyn, dopisz dwie przykładowe
             if (routines.isEmpty()) {
                 // przykładowe nazwy
-                val sample1 = Routine(name = "Full Body Basics")
-                val sample2 = Routine(name = "Upper Body Blast")
+                val sample1 = Routine(name = "Push Routine")
+                val sample2 = Routine(name = "Pull Routine")
+                val sample3 = Routine(name = "Legs Routine")
 
                 routineDao.insertRoutine(sample1)
                 routineDao.insertRoutine(sample2)
+                routineDao.insertRoutine(sample3)
 
                 // odśwież listę
                 routines = routineDao.getAllRoutines()
