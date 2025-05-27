@@ -1,9 +1,14 @@
-// ui/screens/TrainingScreen.kt
 package com.example.gymapp.ui.screens
 
+import android.app.Activity
 import android.media.MediaPlayer
 import android.net.Uri
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.compose.animation.core.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,13 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.gymapp.R
@@ -54,6 +61,18 @@ fun TrainingScreen(
     var isResting by remember { mutableStateOf(false) }
 
     var showRestEndDialog by remember { mutableStateOf(false) }
+    var showWorkoutEndDialog by remember { mutableStateOf(false) }
+    var showCannon by remember { mutableStateOf(false) }
+    var showConfetti1 by remember { mutableStateOf(false) }
+    var showConfetti2 by remember { mutableStateOf(false) }
+    var showConfetti3 by remember { mutableStateOf(false) }
+    var showConfetti4 by remember { mutableStateOf(false) }
+    var showConfetti5 by remember { mutableStateOf(false) }
+    var showConfetti6 by remember { mutableStateOf(false) }
+    var showConfetti7 by remember { mutableStateOf(false) }
+    var showConfetti8 by remember { mutableStateOf(false) }
+    var showConfetti9 by remember { mutableStateOf(false) }
+    var showConfetti10 by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRunning) {
         if (isRunning) {
@@ -117,7 +136,6 @@ fun TrainingScreen(
                     }
                 }
             )
-
         }
     ) { padding ->
         Column(
@@ -178,7 +196,6 @@ fun TrainingScreen(
                                     val repsState = remember {
                                         mutableStateOf(
                                             if (set.reps == 10 && lastLog != null) {
-                                                set.reps = lastLog.reps
                                                 lastLog.reps.toString()
                                             } else set.reps.toString()
                                         )
@@ -187,7 +204,6 @@ fun TrainingScreen(
                                     val weightState = remember {
                                         mutableStateOf(
                                             if (set.weight == 0f && lastLog != null) {
-                                                set.weight = lastLog.weight
                                                 lastLog.weight.toString()
                                             } else set.weight.toString()
                                         )
@@ -242,20 +258,26 @@ fun TrainingScreen(
                                                     isResting = true
 
                                                     // Zapisz log do ExerciseLog
-                                                    val reps = repsState.value.toIntOrNull() ?: set.reps
-                                                    val weight = weightState.value.toFloatOrNull() ?: set.weight
+                                                    val reps = repsState.value.toIntOrNull() ?: 0
+                                                    val weight = weightState.value.toFloatOrNull() ?: 0f
 
-                                                    val rpe = set.rpe
-                                                    if (reps != null && weight != null) {
+                                                    if (reps > 0 && weight >= 0f) {
                                                         coroutineScope.launch {
                                                             val log = ExerciseLog(
                                                                 exerciseId = draft.exercise.id,
                                                                 reps = reps,
                                                                 weight = weight,
-                                                                rpe = rpe
+                                                                rpe = set.rpe
                                                             )
                                                             exerciseLogDao.insert(log)
+                                                            println("Inserted log: $log")
+                                                            val updatedLog = exerciseLogDao.getLastLogForExercise(draft.exercise.id)
+                                                            updatedLog?.let {
+                                                                lastLogs = lastLogs + (draft.exercise.id to it)
+                                                            }
                                                         }
+                                                    } else {
+                                                        println("Invalid reps or weight: reps=$reps, weight=$weight")
                                                     }
                                                 }
                                             }
@@ -273,13 +295,292 @@ fun TrainingScreen(
                 Button(
                     onClick = {
                         isRunning = false
-                        // możesz dodać dialog, nawigację lub logikę zapisu podsumowania
-                        navController.popBackStack()
+                        showWorkoutEndDialog = true
+                        showCannon = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
                     Text("✅ Zakończ trening")
+                }
+            }
+        }
+
+        // Animacja confetti nad dialogiem
+        if (showWorkoutEndDialog || showCannon) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                // Confetti 1
+                val offsetY1 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti1) IntOffset(-180, 1500) else IntOffset(-180, 30),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti1 = false }
+                )
+                val alpha1 by animateFloatAsState(
+                    targetValue = if (showConfetti1) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti1) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY1 }
+                            .alpha(alpha1)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 2
+                val offsetY2 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti2) IntOffset(-140, 2000) else IntOffset(-140, 60),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti2 = false }
+                )
+                val alpha2 by animateFloatAsState(
+                    targetValue = if (showConfetti2) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti2) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY2 }
+                            .alpha(alpha2)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 3
+                val offsetY3 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti3) IntOffset(-100, 1800) else IntOffset(-100, 0),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti3 = false }
+                )
+                val alpha3 by animateFloatAsState(
+                    targetValue = if (showConfetti3) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti3) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY3 }
+                            .alpha(alpha3)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 4
+                val offsetY4 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti4) IntOffset(-60, 1000) else IntOffset(-60, -30),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti4 = false }
+                )
+                val alpha4 by animateFloatAsState(
+                    targetValue = if (showConfetti4) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti4) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY4 }
+                            .alpha(alpha4)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 5
+                val offsetY5 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti5) IntOffset(-20, 1700) else IntOffset(-20, 30),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti5 = false }
+                )
+                val alpha5 by animateFloatAsState(
+                    targetValue = if (showConfetti5) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti5) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY5 }
+                            .alpha(alpha5)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 6
+                val offsetY6 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti6) IntOffset(20, 1300) else IntOffset(20, 60),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti6 = false }
+                )
+                val alpha6 by animateFloatAsState(
+                    targetValue = if (showConfetti6) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti6) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY6 }
+                            .alpha(alpha6)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 7
+                val offsetY7 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti7) IntOffset(60, 1200) else IntOffset(60, 0),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti7 = false }
+                )
+                val alpha7 by animateFloatAsState(
+                    targetValue = if (showConfetti7) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti7) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY7 }
+                            .alpha(alpha7)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 8
+                val offsetY8 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti8) IntOffset(100, 2000) else IntOffset(100, -50),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti8 = false }
+                )
+                val alpha8 by animateFloatAsState(
+                    targetValue = if (showConfetti8) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti8) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY8 }
+                            .alpha(alpha8)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 9
+                val offsetY9 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti9) IntOffset(140, 1900) else IntOffset(140, 90),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti9 = false }
+                )
+                val alpha9 by animateFloatAsState(
+                    targetValue = if (showConfetti9) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti9) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY9 }
+                            .alpha(alpha9)
+                            .align(Alignment.TopCenter)
+                    )
+                }
+
+                // Confetti 10
+                val offsetY10 by animateIntOffsetAsState(
+                    targetValue = if (showConfetti10) IntOffset(180, 1000) else IntOffset(180, 0),
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    ),
+                    finishedListener = { showConfetti10 = false }
+                )
+                val alpha10 by animateFloatAsState(
+                    targetValue = if (showConfetti10) 0f else 1f,
+                    animationSpec = tween(
+                        durationMillis = 2000,
+                        easing = LinearEasing
+                    )
+                )
+                if (showConfetti10) {
+                    Text(
+                        text = "🎊",
+                        fontSize = 36.sp,
+                        modifier = Modifier
+                            .offset { offsetY10 }
+                            .alpha(alpha10)
+                            .align(Alignment.TopCenter)
+                    )
                 }
             }
         }
@@ -292,6 +593,39 @@ fun TrainingScreen(
             text = { Text("Czas wrócić do treningu!") },
             confirmButton = {
                 Button(onClick = { showRestEndDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    if (showWorkoutEndDialog) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Trening zakończony: ${formatElapsed(elapsedMs)}") },
+            text = { Text("Gratulacje, świetny trening!") },
+            confirmButton = {
+                Button(onClick = {
+                    showWorkoutEndDialog = false
+                    coroutineScope.launch {
+                        delay(500)
+                        showConfetti1 = true
+                        showConfetti2 = true
+                        showConfetti3 = true
+                        showConfetti4 = true
+                        showConfetti5 = true
+                        showConfetti6 = true
+                        showConfetti7 = true
+                        showConfetti8 = true
+                        showConfetti9 = true
+                        showConfetti10 = true
+                        delay(4100) // Całkowity czas animacji: 4 sekundy + 100 ms bufor
+                        showCannon = false
+                        navController.navigate("start") {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        }
+                    }
+                }) {
                     Text("OK")
                 }
             }
