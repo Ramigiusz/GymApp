@@ -114,14 +114,14 @@ fun SettingsScreen(navController: NavController) {
                 Text("Zarządzaj ćwiczeniami")
             }
             OutlinedButton(
-                onClick = { /* nic nie rób */ },
+                onClick = { navController.navigate("videoLibrary") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
                 shape = RoundedCornerShape(10),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                Text("Opcja 2")
+                Text("Biblioteka filmów")
             }
             OutlinedButton(
                 onClick = { /* nic nie rób */ },

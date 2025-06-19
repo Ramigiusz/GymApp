@@ -10,6 +10,7 @@ data class Exercise(
     val description: String = "",
     val imageUri: String? = null,
     val videoUri: String? = null,
+    val videoUrl: String? = null,
     val drawableRes: Int? = null,
     val personalRecord: Float = 0f
 )
