@@ -12,6 +12,7 @@ import com.example.gymapp.ui.screens.SettingsScreen
 import com.example.gymapp.ui.screens.TrainingScreen
 import com.example.gymapp.ui.screens.EditRoutineScreen
 import com.example.gymapp.ui.screens.ExercisesScreen
+import com.example.gymapp.ui.screens.VideoLibraryScreen
 import com.example.gymapp.viewmodel.ExerciseViewModel
 
 @Composable
@@ -25,7 +26,6 @@ fun NavGraph(navController: NavHostController) {
             StartScreen(navController)
         }
 
-        // tylko jedna trasa "routines", korzystająca z twojego VM
         composable("routines") {
             RoutinesScreen(navController, routinesViewModel)
         }
@@ -49,6 +49,9 @@ fun NavGraph(navController: NavHostController) {
         }
         composable("exercises") {
             ExercisesScreen(navController, exercisesViewModel)
+        }
+        composable("videoLibrary") { backStackEntry ->
+            VideoLibraryScreen(navController)
         }
     }
 }
