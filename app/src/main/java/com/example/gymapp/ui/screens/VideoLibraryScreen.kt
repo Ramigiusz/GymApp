@@ -37,9 +37,9 @@ fun VideoLibraryScreen(navController: NavController) {
 
     // Definicja stałych ćwiczeń z lokalnymi plikami wideo
     val exercises = listOf(
-        Exercise("Squat", "Podstawowe ćwiczenie na nogi", "android.resource://com.example.gymapp/" + R.raw.squat),
-        Exercise("Push up", "Ćwiczenie na klatkę i ramiona", "android.resource://com.example.gymapp/" + R.raw.push_up),
-        Exercise("Pull up", "Ćwiczenie na plecy i ramiona", "android.resource://com.example.gymapp/" + R.raw.pull_up)
+        Exercise("Przysiad", "Podstawowe ćwiczenie na nogi", "android.resource://com.example.gymapp/" + R.raw.squat),
+        Exercise("Pompka", "Ćwiczenie na klatkę i ramiona", "android.resource://com.example.gymapp/" + R.raw.push_up),
+        Exercise("Podciąganie", "Ćwiczenie na plecy i ramiona", "android.resource://com.example.gymapp/" + R.raw.pull_up)
     )
 
     Scaffold(

@@ -7,7 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +23,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymapp.data.draft.RoutineExerciseDraft
 import com.example.gymapp.data.draft.ExerciseSetDraft
 import com.example.gymapp.ui.components.RestTimePickerDialog
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +110,7 @@ fun EditRoutineScreen(
                             Text(item.exercise.name, style = MaterialTheme.typography.titleMedium)
                             Row {
                                 IconButton(onClick = { showDialog = true }) {
-                                    Icon(Icons.Outlined.Lock, contentDescription = "Ustaw przerwę")
+                                    Icon(Icons.Outlined.Notifications, contentDescription = "Ustaw przerwę")
                                 }
                                 IconButton(onClick = { draftExercises.remove(item) }) {
                                     Icon(Icons.Default.Delete, contentDescription = "Usuń ćwiczenie")

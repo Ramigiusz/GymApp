@@ -1,4 +1,3 @@
-// ui/screens/SettingsScreen.kt
 package com.example.gymapp.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -21,7 +20,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +30,9 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    var notificationsEnabled by remember { mutableStateOf(true) }
+    var darkThemeEnabled by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -44,9 +46,11 @@ fun SettingsScreen(navController: NavController) {
         },
         bottomBar = {
             BottomAppBar {
-                Row(modifier = Modifier.fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically) {
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     // Rutyny
                     Box(
                         modifier = Modifier
@@ -103,6 +107,25 @@ fun SettingsScreen(navController: NavController) {
                 .padding(8.dp),
             verticalArrangement = Arrangement.Top
         ) {
+            // Sekcja ogólne
+            Text("Ogólne", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Powiadomienia", modifier = Modifier.weight(1f))
+                Switch(
+                    checked = notificationsEnabled,
+                    onCheckedChange = { notificationsEnabled = it },
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
+            // Sekcja nawigacji
             OutlinedButton(
                 onClick = { navController.navigate("exercises") },
                 modifier = Modifier
@@ -113,6 +136,7 @@ fun SettingsScreen(navController: NavController) {
             ) {
                 Text("Zarządzaj ćwiczeniami")
             }
+
             OutlinedButton(
                 onClick = { navController.navigate("videoLibrary") },
                 modifier = Modifier
@@ -123,97 +147,64 @@ fun SettingsScreen(navController: NavController) {
             ) {
                 Text("Biblioteka filmów")
             }
+
+            // Sekcja zarządzania danymi
+            Text("Zarządzanie aplikacją", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedButton(
-                onClick = { /* nic nie rób */ },
+                onClick = {
+                    // Instrukcja dla użytkownika
+                    println("Proszę kliknąć ikonę książki pod wiadomością, aby zapomnieć czat.")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
                 shape = RoundedCornerShape(10),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                Text("Opcja 3")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 4")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 5")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 6")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 7")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 8")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 9")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 10")
-            }
-            OutlinedButton(
-                onClick = { /* nic nie rób */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(10),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                Text("Opcja 11")
+                Text("Preferencje")
             }
 
+            OutlinedButton(
+                onClick = {
+                    // Instrukcja dla użytkownika
+                    println("Proszę przejść do 'Data Controls' w ustawieniach, aby zresetować pamięć.")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Resetuj pamięć")
+            }
+
+            // Dodatkowe opcje (zastępują "Opcje")
+            OutlinedButton(
+                onClick = { /* TODO: Zaimplementuj edytowanie profilu */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Edytuj profil")
+            }
+
+            OutlinedButton(
+                onClick = { /* TODO: Zaimplementuj informacje o aplikacji */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                Text("Informacje o aplikacji")
+            }
+
+            // Wypełniacze usunięte, aby uniknąć nadmiaru pustych opcji
         }
     }
 }
+
