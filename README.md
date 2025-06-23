@@ -94,7 +94,10 @@ flowchart TD
 
 ---
 
-```erDiagram
+## 🔗 Diagram relacji bazodanowych (ERD)
+
+```mermaid
+erDiagram
     Routine ||--o{ RoutineExercise : contains
     Exercise ||--o{ RoutineExercise : used_in
     RoutineExercise ||--o{ RoutineExerciseSet : consists_of
@@ -139,4 +142,5 @@ flowchart TD
         Long timestamp
     }
 ```
+
 ---
