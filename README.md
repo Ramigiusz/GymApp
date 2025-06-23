@@ -94,3 +94,49 @@ flowchart TD
 
 ---
 
+```erDiagram
+    Routine ||--o{ RoutineExercise : contains
+    Exercise ||--o{ RoutineExercise : used_in
+    RoutineExercise ||--o{ RoutineExerciseSet : consists_of
+    Exercise ||--o{ ExerciseLog : has_logs
+    Exercise ||--o{ ExerciseTagCrossRef : tagged_with
+    Tag ||--o{ ExerciseTagCrossRef : tags
+    ExerciseTagCrossRef {
+        Int exerciseId
+        Int tagId
+    }
+    Routine {
+        Int id PK
+        String name
+    }
+    Exercise {
+        Int id PK
+        String name
+        String description
+    }
+    RoutineExercise {
+        Int id PK
+        Int routineId FK
+        Int exerciseId FK
+        Int rest
+    }
+    RoutineExerciseSet {
+        Int id PK
+        Int routineExerciseId FK
+        Int reps
+        Float rpe
+        Float weight
+    }
+    Tag {
+        Int id PK
+        String name
+    }
+    ExerciseLog {
+        Int id PK
+        Int exerciseId FK
+        Int reps
+        Float weight
+        Long timestamp
+    }
+```
+---
