@@ -102,12 +102,7 @@ erDiagram
     Exercise ||--o{ RoutineExercise : used_in
     RoutineExercise ||--o{ RoutineExerciseSet : consists_of
     Exercise ||--o{ ExerciseLog : has_logs
-    Exercise ||--o{ ExerciseTagCrossRef : tagged_with
-    Tag ||--o{ ExerciseTagCrossRef : tags
-    ExerciseTagCrossRef {
-        Int exerciseId
-        Int tagId
-    }
+
     Routine {
         Int id PK
         String name
@@ -130,10 +125,7 @@ erDiagram
         Float rpe
         Float weight
     }
-    Tag {
-        Int id PK
-        String name
-    }
+
     ExerciseLog {
         Int id PK
         Int exerciseId FK
