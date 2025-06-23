@@ -1,15 +1,16 @@
-
 # 📱 Colossus – Gym Tracker App
+
 Rami Matouk
 Jan Galicki
 
 **Colossus** to aplikacja mobilna do tworzenia, edytowania i śledzenia planów treningowych na siłowni.
 Stworzona w **Jetpack Compose** + **Room Database** w języku **Kotlin**.
 
-## Mockup aplikacji Colossus
+---
 
-https://www.figma.com/design/bDmddT8Lrk0nivnTjOQsMZ/GymApp?node-id=1-6&t=UbVZhWUv40pXeFEa-1
+## 🎨 Mockup aplikacji Colossus
 
+[🔗 Zobacz w Figma](https://www.figma.com/design/bDmddT8Lrk0nivnTjOQsMZ/GymApp?node-id=1-6&t=UbVZhWUv40pXeFEa-1)
 
 ---
 
@@ -20,41 +21,45 @@ https://www.figma.com/design/bDmddT8Lrk0nivnTjOQsMZ/GymApp?node-id=1-6&t=UbVZhWU
 * 📝 **Edit Routine** – tworzenie i edytowanie planu (nazwa + lista ćwiczeń, serie, RPE, przerwy)
 * ⚙️ **Settings** – ustawienia + dostęp do bazy ćwiczeń
 * 📚 **Exercise Database** – dodawanie, usuwanie i edytowanie ćwiczeń
-* 🏋️ **Training Screen** – ekran aktywnego treningu (docelowo z licznikiem czasu)
+* 📹 **Video Library** – ekran z filmami instruktażowymi do ćwiczeń
+* 🏋️ **Training Screen** – aktywny trening z obsługą logów, serii i przerw
 
 ---
 
 ## 🧱 Architektura
 
-* **Jetpack Compose** – UI
-* **Room** – lokalna baza danych
-* **ViewModel + State** – zarządzanie logiką i danymi
-* **Nawigacja** – Compose Navigation z `NavHost`
+* **Jetpack Compose** – nowoczesny UI
+* **Room** – lokalna baza danych (SQLite)
+* **ViewModel + State** – zarządzanie stanem aplikacji
+* **Compose Navigation** – nawigacja z `NavHost` + argumenty
 
 ---
 
-## 📂 Struktura
+## 📂 Struktura projektu
 
 ```
 com.example.gymapp/
 ├── data/
-│   ├── model/              // Modele Room (Routine, Exercise, RoutineExercise)
-│   ├── dao/                // DAO: RoutineDao, ExerciseDao, RoutineExerciseDao
-│   └── db/                 // AppDatabase
+│   ├── model/              // Modele Room: Routine, Exercise, ExerciseLog, Tag
+│   ├── dao/                // DAO: RoutineDao, ExerciseDao, RoutineExerciseDao, ExerciseLogDao
+│   ├── db/                 // AppDatabase.kt
+│   └── draft/              // Modele robocze (draft) np. RoutineExerciseDraft
 ├── ui/
-│   ├── screens/            // Compose screeny: Start, Settings, Routine itd.
-│   └── components/         // Reużywalne komponenty: RoutineCard, ExerciseItem
-├── viewmodel/              // RoutineViewModel, ExerciseViewModel
-└── navigation/             // NavGraph.kt
+│   ├── screens/            // Ekrany Compose: Start, Routines, Settings, Training, Exercises, VideoLibrary
+│   └── components/         // Komponenty: RoutineCard, ExerciseItem, RestTimePickerDialog
+├── viewmodel/              // ViewModele: RoutineViewModel, ExerciseViewModel
+└── navigation/             // NavGraph.kt – definicja tras
 ```
 
 ---
 
-## 💾 Baza danych
+## 💾 Model danych (Room)
 
-* `Routine` – plan treningowy
-* `Exercise` – ćwiczenie (nazwa, opis, media)
-* `RoutineExercise` – połączenie rutyny z ćwiczeniem (serie, powtórzenia, RPE, przerwa)
+* `Routine` – plan treningowy (id, nazwa, opis)
+* `Exercise` – ćwiczenie (nazwa, opis, tagi, media)
+* `RoutineExercise` – przypisanie ćwiczenia do rutyny (serie, RPE, przerwa)
+* `ExerciseLog` – log wykonanych ćwiczeń (czas, serie, waga, powtórzenia)
+* `Tag` – etykieta opisująca typ ćwiczenia (np. „push”, „legs”)
 
 ---
 
@@ -62,19 +67,19 @@ com.example.gymapp/
 
 ```mermaid
 flowchart TD
-    %% Ekrany główne
-    Start["🏠 Start Screen<br/><small>Szybki dostęp </small>"]
-    Settings["⚙️ Settings Screen<br/><small>Ustawienia Apki</small>"]
-    Routines["📋 Routines Screen<br/><small>Lista rutyn</small>"]
-    EditRoutine["📝 Edit Routine Screen<br/><small>Budowa Rutyny</small>"]
-    Training["🏋️ Training Screen<br/><small>Trening aktywny</small>"]
-    ExerciseDB["📚 Exercise Database<br/><small>Baza ćwiczeń</small>"]
+    Start["🏠 Start Screen"]
+    Settings["⚙️ Settings Screen"]
+    Routines["📋 Routines Screen"]
+    EditRoutine["📝 Edit Routine Screen"]
+    Training["🏋️ Training Screen"]
+    ExerciseDB["📚 Exercise Database"]
+    VideoLibrary["📹 Video Library"]
 
-    %% Nawigacja główna
     Start --> Routines
     Start --> Settings
 
     Settings --> ExerciseDB
+    Settings --> VideoLibrary
     Settings --> Start
     Settings --> Routines
 
@@ -84,13 +89,26 @@ flowchart TD
 
     EditRoutine --> Routines
     Training --> Start
-
-    %% Przypis do EditRoutine
-    subgraph Uwaga
-        Note1["EditRoutineScreen korzysta<br/>z bazy, ale jej nie edytuje"]
-    end
-    EditRoutine -.-> Note1
 ```
 
+---
 
+## 🧪 Testy
 
+* Testy instrumentalne Androida w `androidTest/`
+* Przykład testu: `ExampleInstrumentedTest.kt`
+
+---
+
+## 🚧 Plany rozwoju
+
+* ⏱️ Timer i odliczanie przerw w `TrainingScreen`
+* ☁️ Eksport danych do chmury
+* 📈 Statystyki postępów (na podstawie `ExerciseLog`)
+* 🔒 Zabezpieczenie danych (hasło / biometria)
+
+---
+
+## 📜 Licencja
+
+MIT – możesz korzystać, modyfikować i rozwijać.
