@@ -93,22 +93,3 @@ flowchart TD
 
 ---
 
-## 🧪 Testy
-
-* Testy instrumentalne Androida w `androidTest/`
-* Przykład testu: `ExampleInstrumentedTest.kt`
-
----
-
-## 🚧 Plany rozwoju
-
-* ⏱️ Timer i odliczanie przerw w `TrainingScreen`
-* ☁️ Eksport danych do chmury
-* 📈 Statystyki postępów (na podstawie `ExerciseLog`)
-* 🔒 Zabezpieczenie danych (hasło / biometria)
-
----
-
-## 📜 Licencja
-
-MIT – możesz korzystać, modyfikować i rozwijać.
