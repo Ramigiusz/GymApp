@@ -87,6 +87,7 @@ flowchart TD
     Routines --> EditRoutine
     Routines --> Training
     Routines --> Settings
+    Routines --> Start
 
     EditRoutine --> Routines
     Training --> Start
