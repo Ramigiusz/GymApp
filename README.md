@@ -56,10 +56,9 @@ com.example.gymapp/
 ## 💾 Model danych (Room)
 
 * `Routine` – plan treningowy (id, nazwa, opis)
-* `Exercise` – ćwiczenie (nazwa, opis, tagi, media)
+* `Exercise` – ćwiczenie (nazwa, opis, media)
 * `RoutineExercise` – przypisanie ćwiczenia do rutyny (serie, RPE, przerwa)
 * `ExerciseLog` – log wykonanych ćwiczeń (czas, serie, waga, powtórzenia)
-* `Tag` – etykieta opisująca typ ćwiczenia (np. „push”, „legs”)
 
 ---
 
