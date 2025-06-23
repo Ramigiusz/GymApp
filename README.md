@@ -77,6 +77,8 @@ flowchart TD
 
     Start --> Routines
     Start --> Settings
+    Start --> EditRoutine
+    Start --> Training
 
     Settings --> ExerciseDB
     Settings --> VideoLibrary
